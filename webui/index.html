@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>☕ Inventory (LocalStack)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root { --gap: 12px; }
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; color: #222; }
+      .row { display:flex; gap:var(--gap); align-items:center; flex-wrap:wrap; }
+      input, button, select { padding:8px 12px; font-size:14px; }
+      table { border-collapse: collapse; margin-top: 12px; width:100%; }
+      th, td { padding: 8px 10px; border: 1px solid #e5e5e5; text-align:left; }
+      .card { border:1px solid #eee; border-radius:12px; padding:16px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+      .muted { color:#666; font-size:12px; }
+      .ok { color: #0a0; margin-top: 6px; }
+      .err { color: #c00; margin-top: 6px; white-space: pre-wrap; }
+      .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+      .pill { background:#f6f6f6; padding:4px 8px; border-radius: 999px; font-size:12px; }
+      .right { text-align:right; }
+    </style>
+    <script>
+      // This value gets overwritten by webui/config.js created via scripts/write_webui_config.sh
+      window.API_BASE = "";
+    </script>
+    <script src="./config.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  </head>
+  <body>
+    <h1>☕ Serverless Inventory (LocalStack)</h1>
+    <div id="app"></div>
+
+    <script>
+      const e = React.createElement;
+
+      const qtyOptions = Array.from({length:10}, (_,i)=>i+1);
+
+      function number(v, fallback=0){
+        const n = Number(v);
+        return Number.isFinite(n) ? n : fallback;
+      }
+
+      function App(){
+        const [api] = React.useState(window.API_BASE || "");
+        const [items, setItems] = React.useState([]);
+        const [msg, setMsg] = React.useState("");
+        const [error, setError] = React.useState("");
+
+        // Create item form
+        const [sku, setSku]     = React.useState("ESP-001");
+        const [name, setName]   = React.useState("Espresso");
+        const [price, setPrice] = React.useState("3.50");
+        const [stock, setStock] = React.useState("10");
+
+        // Order builder
+        const [selSku, setSelSku] = React.useState("");
+        const [selQty, setSelQty] = React.useState(1);
+        const [cart, setCart]     = React.useState([]);
+
+        const fetchItems = async () => {
+          setError("");
+          try{
+            const r = await fetch(api + "/items", { headers: { "Accept":"application/json" }});
+            const j = await r.json();
+            setItems(j);
+            setMsg("Loaded items");
+            if(!selSku && j.length) setSelSku(j[0].sku);
+          }catch(err){ setError(err.toString()); }
+        };
+
+        const createItem = async () => {
+          setError("");
+          try{
+            const r = await fetch(api + "/items", {
+              method: "POST",
+              headers: {"Content-Type":"application/json"},
+              body: JSON.stringify({ sku, name, price: number(price), stock: parseInt(stock||"0",10) })
+            });
+            const j = await r.json();
+            if(!r.ok) throw new Error(typeof j==="string" ? j : JSON.stringify(j,null,2));
+            setMsg("Created item");
+            setSku(""); setName(""); setPrice(""); setStock("");
+            fetchItems();
+          }catch(err){ setError(err.toString()); }
+        };
+
+        const addToCart = () => {
+          if(!selSku) return;
+          const item = items.find(i => i.sku === selSku);
+          if(!item) return;
+          setCart(prev => {
+            const idx = prev.findIndex(l => l.sku === selSku);
+            if(idx >= 0){
+              const copy = [...prev];
+              copy[idx] = {...copy[idx], qty: copy[idx].qty + selQty};
+              return copy;
+            }
+            return [...prev, { sku: selSku, name: item.name, price: item.price, qty: selQty }];
+          });
+          setMsg("Added to cart");
+        };
+
+        const removeFromCart = (sku) => setCart(prev => prev.filter(l => l.sku !== sku));
+        const total = cart.reduce((sum, l) => sum + number(l.price)*l.qty, 0);
+
+        const placeOrder = async () => {
+          if(!cart.length) return;
+          setError("");
+          try{
+            const r = await fetch(api + "/orders", {
+              method: "POST",
+              headers: {"Content-Type":"application/json"},
+              body: JSON.stringify({ items: cart.map(l => ({ sku: l.sku, qty: l.qty })) })
+            });
+            const j = await r.json();
+            if(!r.ok) throw new Error(JSON.stringify(j, null, 2));
+            setMsg("Order placed: " + j.id);
+            setCart([]);
+            fetchItems(); // refresh stocks
+          }catch(err){ setError(err.toString()); }
+        };
+
+        React.useEffect(()=>{ if(api) fetchItems(); }, [api]);
+
+        if(!api){
+          return e('p', {className:'err'}, "API_BASE not set. Run scripts/write_webui_config.sh and refresh.");
+        }
+
+        return e('div', null,
+          e('div', {className:'muted'}, "API: " + api),
+
+          e('div', {className:'grid'},
+            // Create Item card
+            e('div', {className:'card'},
+              e('h3', null, "Create Item"),
+              e('div', {className:'row'},
+                e('input', {style:{minWidth:120}, value:sku, onChange:e=>setSku(e.target.value), placeholder:'SKU'}),
+                e('input', {style:{minWidth:180}, value:name, onChange:e=>setName(e.target.value), placeholder:'Name'}),
+                e('input', {type:'number', step:'0.01', value:price, onChange:e=>setPrice(e.target.value), placeholder:'Price'}),
+                e('input', {type:'number', step:'1', value:stock, onChange:e=>setStock(e.target.value), placeholder:'Stock'}),
+                e('button', {onClick:createItem}, "Create")
+              ),
+              msg && e('div', {className:'ok'}, msg),
+              error && e('div', {className:'err'}, error)
+            ),
+
+            // Build Order (dropdowns!)
+            e('div', {className:'card'},
+              e('h3', null, "Build Order"),
+              e('div', {className:'row'},
+                e('select', {value:selSku, onChange:e=>setSelSku(e.target.value), style:{minWidth:200}},
+                  items.length ? items.map(it => e('option', {key:it.sku, value:it.sku}, `${it.sku} — ${it.name} ($${it.price})`))
+                               : [e('option',{key:'none', value:''},"No items yet")]
+                ),
+                e('select', {value:selQty, onChange:e=>setSelQty(Number(e.target.value))},
+                  qtyOptions.map(q => e('option', {key:q, value:q}, q))
+                ),
+                e('button', {onClick:addToCart}, "Add to Cart")
+              ),
+              e('div', {className:'muted'}, "Select an item and quantity, then Add to Cart.")
+            )
+          ),
+
+          // Cart + Place Order
+          e('div', {className:'card'},
+            e('h3', null, "Cart"),
+            cart.length === 0
+              ? e('div', {className:'muted'}, "Your cart is empty.")
+              : e('table', null,
+                  e('thead', null, e('tr', null,
+                    e('th', null, "SKU"), e('th', null, "Name"), e('th', null, "Qty"), e('th', null, "Price"), e('th', null, "Line Total"), e('th', null, "")
+                  )),
+                  e('tbody', null, cart.map(l =>
+                    e('tr', {key:l.sku},
+                      e('td', null, l.sku),
+                      e('td', null, l.name),
+                      e('td', null, l.qty),
+                      e('td', null, `$${number(l.price).toFixed(2)}`),
+                      e('td', null, `$${(number(l.price)*l.qty).toFixed(2)}`),
+                      e('td', null, e('button', {onClick:()=>removeFromCart(l.sku)}, "Remove"))
+                    )
+                  )),
+                  e('tfoot', null, e('tr', null,
+                    e('td', {colSpan:4, className:'right'}, e('strong', null, "Total")),
+                    e('td', null, e('strong', null, `$${total.toFixed(2)}`)),
+                    e('td', null)
+                  ))
+                ),
+            e('div', {className:'row'},
+              e('button', {onClick:placeOrder, disabled:cart.length===0}, "Place Order"),
+              e('span', {className:'pill'}, "Orders POST /orders")
+            )
+          ),
+
+          // Items list
+          e('div', {className:'card'},
+            e('h3', null, "Items"),
+            e('button', {onClick:fetchItems}, "Refresh"),
+            e('table', null,
+              e('thead', null, e('tr', null, ['SKU','Name','Price','Stock'].map(h=>e('th',{key:h},h)))),
+              e('tbody', null, items.map(it =>
+                e('tr', {key:it.sku},
+                  e('td', null, it.sku),
+                  e('td', null, it.name),
+                  e('td', null, it.price),
+                  e('td', null, it.stock),
+                )
+              ))
+            )
+          )
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('app')).render(React.createElement(App));
+    </script>
+  </body>
+</html>

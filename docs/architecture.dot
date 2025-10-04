@@ -1,0 +1,28 @@
+digraph G {
+  rankdir=LR;
+  node [shape=box, style=rounded];
+
+  subgraph cluster_local {
+    label="LocalStack (Local AWS)";
+    style=dashed;
+
+    api [label="API Gateway (HTTP API)"];
+    items_fn [label="Lambda: items"];
+    orders_fn [label="Lambda: orders"];
+    stock_fn [label="Lambda: stock"];
+
+    items_db [label="DynamoDB: Items"];
+    orders_db [label="DynamoDB: Orders"];
+    movements_db [label="DynamoDB: StockMovements"];
+
+    api -> items_fn [label="/items/*"];
+    api -> orders_fn [label="/orders/*"];
+    api -> stock_fn [label="/stock/*"];
+
+    items_fn -> items_db;
+    orders_fn -> orders_db;
+    stock_fn -> items_db;
+    stock_fn -> movements_db;
+    orders_fn -> items_db [label="Txn check stock"];
+  }
+}

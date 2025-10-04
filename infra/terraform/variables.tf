@@ -1,0 +1,1 @@
+# variables declared inline in main.tf for simplicity
