@@ -1,0 +1,12 @@
+# LocalStack / Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+__pycache__/
+.env
+*.zip
+
+# Logs
+*.log
+logs/
