@@ -1,0 +1,112 @@
+
+// CafeOps Architecture (Public-Facing) — Graphviz DOT
+// Repo: dj-3dub/CafeOps
+// Purpose: High-level public diagram (no real creds/IDs).
+// Render: dot -Tsvg cafeops_architecture_public.dot -o cafeops_architecture_public.svg
+
+digraph CafeOps {
+  rankdir=LR;
+  labelloc="t";
+  label="CafeOps — Serverless on LocalStack (Public-Facing)";
+  fontsize=24;
+  fontname="Inter, Helvetica, Arial";
+  bgcolor="white";
+
+  node [shape=rectangle, style="rounded,filled", fillcolor="#f7f7fb", color="#bfc3d9", fontname="Inter, Helvetica, Arial", fontsize=12];
+  edge [color="#6b7280", fontname="Inter, Helvetica, Arial", fontsize=10];
+
+  // ---------- Legend ----------
+  subgraph cluster_legend {
+    label="Legend";
+    fontsize=14;
+    color="#e5e7eb";
+    style="rounded";
+    leg1 [label="Solid edge: request/CI/CD/data flow"];
+    leg2 [label="Dotted edge: logs/metrics/test signals"];
+  }
+
+  // ---------- Dev / Source Control ----------
+  subgraph cluster_dev {
+    label="Developer & Source";
+    fontsize=16;
+    color="#e5e7eb";
+    style="rounded";
+    Dev[label="Developer\n(local code, tests)", shape=ellipse, fillcolor="#eef2ff"];
+    GitHub[label="GitHub Repo\n(dj-3dub/CafeOps)\n• Issues • PRs • Releases"];
+    Actions[label="GitHub Actions\n(CI/CD: fmt • validate • test • apply)"];
+  }
+
+  // ---------- Infra as Code ----------
+  subgraph cluster_iac {
+    label="IaC & Tooling";
+    fontsize=16;
+    color="#e5e7eb";
+    style="rounded";
+    Terraform[label="Terraform\n(modules, state local)"];
+    Smoke[label="Smoke Tests\n(automated endpoints)"];
+  }
+
+  // ---------- LocalStack ----------
+  subgraph cluster_localstack {
+    label="LocalStack — AWS Emulation";
+    fontsize=16;
+    color="#e5e7eb";
+    style="rounded";
+
+    APIGW[label="API Gateway"];
+    Lambda[label="Lambda Functions\n(handlers)"];
+    DynamoDB[label="DynamoDB\n(tables)"];
+    S3[label="S3 Buckets\n(static assets, artifacts)"];
+
+    // Optional: Logs/metrics (emulated)
+    subgraph cluster_obs {
+      label="Observability (optional)";
+      color="#f3f4f6";
+      style="rounded";
+      Logs[label="Logs\n(e.g., CloudWatch emulation)"];
+      Metrics[label="Metrics / Traces\n(optional exporters)"];
+    }
+  }
+
+  // ---------- Client ----------
+  subgraph cluster_client {
+    label="Client / Consumer";
+    fontsize=16;
+    color="#e5e7eb";
+    style="rounded";
+    Client[label="Client (curl, browser, Postman)", shape=ellipse, fillcolor="#eef2ff"];
+  }
+
+  // ---------- Flows ----------
+
+  // Dev -> GitHub
+  Dev -> GitHub [label="push PR/commit"];
+
+  // GitHub Actions CI/CD
+  GitHub -> Actions [label="trigger workflow"];
+  Actions -> Terraform [label="fmt/validate/plan/apply"];
+  Terraform -> APIGW;
+  Terraform -> Lambda;
+  Terraform -> DynamoDB;
+  Terraform -> S3;
+
+  // Runtime request path
+  Client -> APIGW [label="HTTPS (invoke)"];
+  APIGW -> Lambda [label="invoke"];
+  Lambda -> DynamoDB [label="CRUD"];
+  Lambda -> S3 [label="get/put"];
+
+  // Smoke tests & Observability
+  Actions -> Smoke [label="post-deploy smoke"];
+  Smoke -> APIGW [style=dotted, label="health checks"];
+  Lambda -> Logs [style=dotted, label="function logs"];
+  APIGW -> Logs [style=dotted, label="access logs"];
+  Logs -> Metrics [style=dotted, label="derived metrics (optional)"];
+
+  // Artifacts
+  Actions -> S3 [label="publish artifacts (optional)"];
+
+  // Layout hints
+  {rank=same; GitHub; Actions; Terraform;}
+  {rank=same; APIGW; Lambda; DynamoDB; S3;}
+}

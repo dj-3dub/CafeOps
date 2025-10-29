@@ -1,41 +1,16 @@
-SHELL := /bin/bash
-AWS_REGION ?= us-east-1
-AWS_ACCESS_KEY_ID ?= test
-AWS_SECRET_ACCESS_KEY ?= test
-ENDPOINT_URL ?= http://localhost:4566
 
-export AWS_REGION AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+# Render CafeOps architecture with Graphviz
+ARCH_DOT=cafeops_architecture_public.dot
+ARCH_SVG=cafeops_architecture_public.svg
+ARCH_PNG=cafeops_architecture_public.png
 
-.PHONY: up down init plan apply destroy seed outputs curl-items curl-new-order url
+.PHONY: arch clean
 
-up:
-	docker compose up -d
+arch:
+\t@dot -Tsvg $(ARCH_DOT) -o $(ARCH_SVG)
+\t@dot -Tpng $(ARCH_DOT) -o $(ARCH_PNG)
+\t@echo "Wrote $(ARCH_SVG) and $(ARCH_PNG)"
 
-down:
-	docker compose down -v
-
-init:
-	cd infra/terraform && terraform init
-
-plan:
-	cd infra/terraform && terraform plan -var="lambda_zip_dir=../../src" -var="endpoint_url=$(ENDPOINT_URL)"
-
-apply:
-	cd infra/terraform && terraform apply -auto-approve -var="lambda_zip_dir=../../src" -var="endpoint_url=$(ENDPOINT_URL)"
-
-destroy:
-	cd infra/terraform && terraform destroy -auto-approve -var="lambda_zip_dir=../../src" -var="endpoint_url=$(ENDPOINT_URL)"
-
-seed:
-	python3 scripts/seed.py
-
-outputs:
-	cd infra/terraform && terraform output -json | python3 ../../scripts/print_api_url.py
-
-url: outputs
-
-curl-items:
-	bash scripts/curl_examples.sh list_items
-
-curl-new-order:
-	bash scripts/curl_examples.sh new_order
+clean:
+\t@rm -f $(ARCH_SVG) $(ARCH_PNG)
+\t@echo "Cleaned generated files"
