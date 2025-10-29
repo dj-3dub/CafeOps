@@ -12,7 +12,7 @@ It runs entirely on **AWS-emulated services via LocalStack**, using **Lambda, AP
 ## 🚀 Overview
 
 CafeOps demonstrates how to design and automate a **modern cloud-native backend** without provisioning or maintaining servers.  
-It provides an inventory API for managing menu items, stock movements, and orders — locally emulated yet architected for production.
+It provides an inventory API for managing menu items, stock movements, and orders locally emulated yet architected for production.
 
 ### 🧩 Core Architecture
 
