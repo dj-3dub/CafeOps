@@ -39,6 +39,18 @@ It provides an inventory API for managing menu items, stock movements, and order
 
 ---
 
+## ☕ CafeOps Architecture
+
+<p align="center">
+  <img src="./cafeops_architecture_public.svg" alt="CafeOps Architecture" width="100%">
+</p>
+
+Public-facing overview of **CafeOps** — an AWS serverless stack emulated with **LocalStack**, provisioned by **Terraform**, and validated via **GitHub Actions** and **smoke tests**.
+
+*Rendered from* [`cafeops_architecture_public.dot`](./cafeops_architecture_public.dot) *using Graphviz.*
+
+---
+
 ## ⚙️ Local Development
 
 ### 1️⃣ Start LocalStack
