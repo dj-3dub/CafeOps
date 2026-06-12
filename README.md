@@ -1,130 +1,151 @@
-<p align="center">
-  <img src="https://em-content.zobj.net/source/microsoft-teams/337/hot-beverage_2615.png" width="80" />
-</p>
+# CafeOps
 
-# ☕ CafeOps — Serverless Inventory for a Coffee Shop
+CafeOps is a serverless operations platform built to demonstrate modern cloud engineering practices using AWS services, Infrastructure as Code, and automated deployment workflows.
 
-**CafeOps** is a fully **serverless inventory management system** built for a fictional coffee shop.  
-It runs entirely on **AWS-emulated services via LocalStack**, using **Lambda, API Gateway, and DynamoDB**, all orchestrated with **Terraform** and wrapped in a clean developer experience with `make` and Python helper scripts.
+The platform manages inventory, stock movements, and order processing through a REST API backed by AWS Lambda, API Gateway, and DynamoDB. Infrastructure is provisioned and maintained using Terraform, while LocalStack provides a fully local development environment that mirrors core AWS services.
 
----
+This project was designed to showcase practical cloud engineering skills including Infrastructure as Code, serverless application development, API design, automated provisioning, operational automation, and cloud-native architecture patterns.
 
-## 🚀 Overview
+## Architecture
 
-CafeOps demonstrates how to design and automate a **modern cloud-native backend** without provisioning or maintaining servers.  
-It provides an inventory API for managing menu items, stock movements, and orders locally emulated yet architected for production.
+### Core Components
 
-### 🧩 Core Architecture
+* AWS Lambda for serverless business logic
+* Amazon API Gateway for REST API exposure
+* Amazon DynamoDB for inventory and order data
+* Terraform for Infrastructure as Code
+* LocalStack for local AWS service emulation
+* Docker Compose for environment orchestration
+* Makefile for operational automation
 
-| Layer | Service / Tech | Description |
-|-------|----------------|-------------|
-| **Compute** | AWS Lambda (Python 3.11) | Stateless functions for item, stock, and order APIs |
-| **API Layer** | Amazon API Gateway v2 | Routes REST endpoints (`/items`, `/orders`, `/stock`) |
-| **Data Layer** | DynamoDB | Serverless key-value data store for items, orders, and stock events |
-| **IaC** | Terraform | Defines all infrastructure with repeatable IaC |
-| **Local Emulation** | LocalStack | Spins up AWS-like endpoints for development and testing |
-| **Automation** | Makefile + Bash + Python | Streamlined workflows (`make up`, `make apply`, `make smoke`) |
+### Functional Areas
 
----
+#### Inventory Management
 
-## 🧠 What I Learned
+Maintains product catalog information and inventory records.
 
-- **Serverless application design:** separating stateless business logic (Lambda) from persistent data (DynamoDB).  
-- **API Gateway integration:** exposing Lambdas via RESTful endpoints and managing routing.  
-- **Infrastructure as Code (IaC):** using Terraform modules and outputs to fully automate environment setup.  
-- **LocalStack simulation:** building and debugging AWS-style architectures locally without cloud costs.  
-- **Observability & testing:** using custom smoke tests and diagnostic scripts to validate APIs and Lambda execution.  
-- **Resilience & error handling:** implementing conditional updates, type validation, and decimal handling in DynamoDB.  
-- **Modern DevOps patterns:** using Makefiles for reproducible developer workflows and Python scripting for automation.
+#### Stock Movement Tracking
 
----
+Tracks inventory adjustments, receipts, and stock changes.
 
-## ☕ CafeOps Architecture
+#### Order Processing
 
-<p align="center">
-  <img src="./cafeops_architecture_public.svg" alt="CafeOps Architecture" width="100%">
-  <sub>Having trouble viewing the SVG? View the PNG version <a href="./cafeops_architecture_public.png">here</a>.</sub>
+Processes and records customer orders through REST API endpoints.
 
-</p>
+## Technology Stack
 
-Public-facing overview of **CafeOps** — an AWS serverless stack emulated with **LocalStack**, provisioned by **Terraform**, and validated via **GitHub Actions** and **smoke tests**.
+### Cloud Services
 
----
+* AWS Lambda
+* Amazon API Gateway
+* Amazon DynamoDB
 
-## ⚙️ Local Development
+### Infrastructure
 
-### 1️⃣ Start LocalStack
+* Terraform
+* Docker
+* Docker Compose
+* LocalStack
+
+### Development
+
+* Python 3.11
+* REST APIs
+* JSON
+
+### Automation
+
+* Makefile
+* Shell scripting
+
+## Repository Structure
+
+```text
+.
+├── infra/
+│   └── terraform/
+├── scripts/
+├── src/
+│   ├── common/
+│   └── handlers/
+├── webui/
+├── docker-compose.yml
+├── Makefile
+└── README.md
+```
+
+## Infrastructure as Code
+
+Infrastructure is provisioned through Terraform and includes:
+
+* DynamoDB tables
+* IAM roles and policies
+* Lambda functions
+* API Gateway resources
+* API deployments and stages
+
+Terraform configuration is organized using:
+
+* versions.tf
+* providers.tf
+* variables.tf
+* outputs.tf
+* main.tf
+
+## Operations
+
+### Start Environment
+
 ```bash
 make up
 ```
 
-### 2️⃣ Provision Infrastructure
-```bash
-make init
-make apply
-```
-
-### 3️⃣ Run Smoke Tests
-```bash
-./scripts/smoke.sh
-```
-
-### 4️⃣ Launch Web UI (if enabled)
-```bash
-python3 -m http.server 8082
-```
-Then open: [http://localhost:8082](http://localhost:8082)
-
----
-
-## 🧪 Example API Calls
+### Validate Terraform
 
 ```bash
-# Create an item
-curl -X POST "$API/items" -d '{"sku":"ESP-001","name":"Espresso","price":3.50,"stock":10}' -H "Content-Type: application/json"
-
-# Get all items
-curl "$API/items"
-
-# Record stock in/out
-curl -X POST "$API/stock/in"  -d '{"sku":"ESP-001","qty":5,"reason":"delivery"}' -H "Content-Type: application/json"
-curl -X POST "$API/stock/out" -d '{"sku":"ESP-001","qty":2,"reason":"sale"}' -H "Content-Type: application/json"
+make tf-validate
 ```
 
----
+### Apply Infrastructure
 
-## 🧰 Project Structure
-
-```
-CafeOps/
-├── infra/
-│   └── terraform/        # Terraform modules & state
-├── lambdas/
-│   └── handlers/         # Python Lambda handlers
-├── scripts/              # Smoke tests, diagnostics, helpers
-├── Makefile              # Workflow automation
-└── README.md             # You're here
+```bash
+make tf-apply
 ```
 
----
+### Run Smoke Tests
 
-## 🪜 Elevator Pitch
+```bash
+make smoke
+```
 
-> **CafeOps** is a self-contained serverless system that emulates a real-world AWS production backend —  
-> complete with IaC provisioning, Lambda functions, and API integration — all running locally.  
-> It shows how to design scalable cloud systems without a single VM, proving that infrastructure, automation,  
-> and developer experience can coexist cleanly in one reproducible stack.
+### View Service Status
 
----
+```bash
+make status
+```
 
-## 🏁 Next Steps
+## Skills Demonstrated
 
-- Add CloudWatch logging and metrics exporters via LocalStack extensions.  
-- Expand the Web UI with dynamic item creation and order dashboards.  
-- Deploy to AWS using Terraform backends and real AWS credentials.
+* Infrastructure as Code (Terraform)
+* Serverless Architecture
+* AWS Service Integration
+* API Design and Development
+* Cloud Resource Provisioning
+* IAM and Access Management
+* DynamoDB Data Modeling
+* Docker-Based Development Environments
+* Operational Automation
+* Platform Engineering Fundamentals
 
----
+## Future Enhancements
 
-<p align="center">
-  <sub>☕ Built with passion for code, coffee, and clean architecture.</sub>
-</p>
+* CI/CD pipeline integration
+* Automated testing workflows
+* CloudWatch-style observability
+* Authentication and authorization
+* Multi-environment Terraform deployments
+* Infrastructure security scanning
+
+## License
+
+This project is licensed under the terms of the LICENSE file included in this repository.
