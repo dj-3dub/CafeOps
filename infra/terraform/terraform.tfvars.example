@@ -1,0 +1,4 @@
+lambda_zip_dir      = "../../src"
+endpoint_url        = "http://localhost:4566"
+lambda_endpoint_url = "http://localstack:4566"
+aws_region          = "us-east-1"

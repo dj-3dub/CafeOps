@@ -1,12 +1,35 @@
-# LocalStack / Terraform
-.terraform/
-.terraform.lock.hcl
-*.tfstate
-*.tfstate.backup
-__pycache__/
+# Environment
 .env
-*.zip
+.env.*
+!.env.example
 
-# Logs
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+
+# Local AWS CLI install / generated tooling
+aws/
+
+# LocalStack runtime data
+.localstack/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+terraform.tfvars
+.terraform.lock.hcl
+
+# Generated project files
+infra/terraform/terraform_api_url.txt
+infra/terraform_api_url.txt
 *.log
-logs/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
