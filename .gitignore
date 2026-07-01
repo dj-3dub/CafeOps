@@ -1,35 +1,25 @@
-# Environment
-.env
-.env.*
-!.env.example
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+crash.log
+crash.*.log
+*.tfplan
+
+# Runtime/generated
+infra/terraform_api_url.txt
+webui/config.js
 
 # Python
 __pycache__/
-*.py[cod]
-*.pyo
+*.pyc
 .venv/
-venv/
+.env
 
-# Local AWS CLI install / generated tooling
-aws/
-
-# LocalStack runtime data
-.localstack/
-
-# Terraform
-**/.terraform/
-*.tfstate
-*.tfstate.*
-*.tfplan
-terraform.tfvars
-.terraform.lock.hcl
-
-# Generated project files
-infra/terraform/terraform_api_url.txt
-infra/terraform_api_url.txt
-*.log
-
-# OS / editor
+# OS/editor
 .DS_Store
 .vscode/
-.idea/
+
+# LocalStack
+.localstack/
