@@ -1,317 +1,319 @@
 # CafeOps
 
-**Serverless Operations Platform | Terraform | AWS Lambda | API Gateway | DynamoDB | LocalStack**
+> **Production-Inspired Serverless AWS Platform**
 
-CafeOps is a serverless operations platform built to demonstrate modern cloud engineering practices using AWS services, Infrastructure as Code, and automated deployment workflows.
+**Design. Deploy. Validate. Automate.**
 
-The platform manages inventory, stock movements, and order processing through a REST API backed by AWS Lambda, API Gateway, and DynamoDB. Infrastructure is provisioned and maintained using Terraform, while LocalStack provides a fully local development environment that mirrors core AWS services.
+[![CI](https://github.com/dj-3dub/CafeOps/actions/workflows/validate.yml/badge.svg)](https://github.com/dj-3dub/CafeOps/actions/workflows/validate.yml)
+[![License](https://img.shields.io/github/license/dj-3dub/CafeOps)](LICENSE)
+[![Last
+Commit](https://img.shields.io/github/last-commit/dj-3dub/CafeOps)](https://github.com/dj-3dub/CafeOps/commits/main)
+[![Repo
+Size](https://img.shields.io/github/repo-size/dj-3dub/CafeOps)](https://github.com/dj-3dub/CafeOps)
 
-This project was designed to showcase practical cloud engineering skills including Infrastructure as Code, serverless application development, API design, automated provisioning, operational automation, and cloud-native architecture patterns.
+**Terraform • AWS Lambda • API Gateway • DynamoDB • Python • LocalStack
+• Docker**
 
----
+![CafeOps Architecture](docs/architecture/cafeops.svg)
 
-## Architecture
+## Table of Contents
 
-![CafeOps Architecture](cafeops_architecture_public.svg)
+-   Overview
+-   Why I Built This
+-   Engineering Philosophy
+-   Design Philosophy
+-   Engineering Principles
+-   Objectives
+-   Key Highlights
+-   Technology Stack
+-   Architecture
+-   Repository Structure
+-   Prerequisites
+-   Quick Start
+-   Makefile Interface
+-   Development Workflow
+-   Validation
+-   AWS Architecture
+-   AWS Services
+-   AWS Competencies Demonstrated
+-   Testing
+-   Screenshots
+-   Documentation
+-   Roadmap
+-   Lessons Learned
+-   Portfolio Engineering Standard
+-   License
+-   Author
 
-### Architecture Summary
+## Project Status
 
-CafeOps follows a serverless architecture pattern where API Gateway routes requests to Lambda functions responsible for inventory, order, and stock movement workflows. Data is persisted in DynamoDB, while Terraform manages the complete infrastructure lifecycle. LocalStack provides a local AWS-compatible environment for development and testing.
+  Component                         Status
+  ------------------------------ ------------
+  🏗 Infrastructure                    ✅
+  ☁ AWS Services                      ✅
+  🤖 Automation                       ✅
+  🧪 Validation                       🚧
+  📚 Documentation                    🚧
+  🚀 Production AWS Deployment    📅 Planned
 
----
+# Overview
 
-## Project Highlights
+CafeOps is a production-inspired serverless application that models
+inventory, order processing, and stock management for a fictional coffee
+shop.
 
-* Serverless REST API built with AWS Lambda and API Gateway
-* Infrastructure provisioned and managed through Terraform
-* DynamoDB-backed inventory, order, and stock management workflows
-* Local AWS emulation using LocalStack
-* Docker Compose-based development environment
-* Automated operational workflows through Makefile targets
-* GitHub Actions CI/CD pipeline for Terraform validation
-* Python-based Lambda functions and automation scripts
+Built with Terraform, AWS Lambda, API Gateway, DynamoDB, Python, and
+LocalStack, CafeOps demonstrates Infrastructure as Code, serverless
+application architecture, operational automation, validation, and modern
+cloud engineering practices through a fully reproducible local AWS
+environment.
 
----
+# Why I Built This
 
-## Core Components
+CafeOps was developed as part of my AWS Certified Solutions Architect --
+Associate (SAA-C03) preparation. Rather than building isolated examples,
+I wanted to create a complete serverless platform that reflects
+production-inspired engineering practices.
 
-### AWS Lambda
+# Engineering Philosophy
 
-Provides serverless business logic for:
+Every flagship project in my portfolio follows the same methodology:
 
-* Inventory management
-* Order processing
-* Stock movement tracking
+-   Architecture First
+-   Infrastructure as Code
+-   Automation by Default
+-   Validation Before Deployment
+-   Documentation as Code
+-   Repeatable Workflows
+-   Operational Simplicity
 
-### Amazon API Gateway
+# Design Philosophy
 
-Acts as the public REST API entry point and routes requests to the appropriate Lambda functions.
+CafeOps is intentionally organized like a small production service
+instead of a tutorial. Every architectural decision favors
+maintainability, repeatability, and operational clarity.
 
-### Amazon DynamoDB
+# Objectives
 
-Provides persistent storage for:
+-   Provision infrastructure with Terraform
+-   Build REST APIs using API Gateway and Lambda
+-   Store data in DynamoDB
+-   Develop against LocalStack
+-   Automate deployment and validation
+-   Demonstrate AWS SAA concepts
 
-* Items
-* Orders
-* Stock Movements
+# Key Highlights
 
-### Terraform
+-   Production-inspired architecture
+-   Infrastructure as Code
+-   LocalStack-powered development
+-   Automated validation
+-   GitHub Actions CI
+-   Architecture-first documentation
 
-Manages infrastructure lifecycle and resource provisioning.
+# Technology Stack
 
-### LocalStack
+  Category            Technology
+  ------------------- ----------------
+  Cloud               AWS
+  IaC                 Terraform
+  Compute             Lambda
+  API                 API Gateway
+  Database            DynamoDB
+  Language            Python
+  Local Development   LocalStack
+  Containers          Docker
+  Automation          GNU Make
+  CI                  GitHub Actions
 
-Provides a local AWS-compatible development and testing environment.
+# Architecture
 
-### Docker Compose
+See `docs/architecture/cafeops.svg` for the complete architecture.
 
-Orchestrates LocalStack and supporting services.
+## Request Flow
 
-### Makefile
+``` text
+Client
+  ↓
+API Gateway
+  ↓
+Lambda
+  ↓
+DynamoDB
+  ↓
+JSON Response
+```
 
-Provides operational automation for deployment, validation, testing, and troubleshooting workflows.
+# Repository Structure
 
----
-
-## Functional Areas
-
-### Inventory Management
-
-Maintains product catalog information and inventory records.
-
-### Stock Movement Tracking
-
-Tracks inventory adjustments, receipts, and stock changes.
-
-### Order Processing
-
-Processes and records customer orders through REST API endpoints.
-
----
-
-## Technology Stack
-
-### Cloud Services
-
-* AWS Lambda
-* Amazon API Gateway
-* Amazon DynamoDB
-
-### Infrastructure & Automation
-
-* Terraform
-* Docker
-* Docker Compose
-* LocalStack
-* Makefile
-* GitHub Actions
-
-### Development
-
-* Python 3.11
-* REST APIs
-* JSON
-* Shell Scripting
-
----
-
-## Skills Demonstrated
-
-* Infrastructure as Code (Terraform)
-* Serverless Architecture Design
-* AWS Service Integration
-* API Design and Development
-* Cloud Resource Provisioning
-* IAM and Access Management
-* DynamoDB Data Modeling
-* Docker-Based Development Environments
-* Operational Automation
-* CI/CD Pipeline Validation
-* Platform Engineering Fundamentals
-* Cloud-Native Application Design
-
----
-
-## Repository Structure
-
-```text
-.
-├── .github/
-│   └── workflows/
-│       └── validate.yml
+``` text
+CafeOps/
 ├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── RUNBOOK.md
-│   └── TERRAFORM.md
 ├── infra/
-│   └── terraform/
-│       ├── versions.tf
-│       ├── providers.tf
-│       ├── variables.tf
-│       ├── outputs.tf
-│       ├── terraform.tfvars.example
-│       └── main.tf
 ├── scripts/
 ├── src/
-│   ├── common/
-│   └── handlers/
+├── tests/
 ├── webui/
-├── docker-compose.yml
 ├── Makefile
 └── README.md
 ```
 
----
+# Prerequisites
 
-## Infrastructure as Code
+-   Docker
+-   Terraform
+-   Python 3
+-   GNU Make
+-   Git
 
-Infrastructure is provisioned and managed through Terraform and includes:
+# Quick Start
 
-### DynamoDB
-
-* Items table
-* Orders table
-* StockMovements table
-
-### IAM
-
-* Lambda execution roles
-* IAM policies
-* Policy attachments
-
-### AWS Lambda
-
-* items
-* orders
-* stock
-
-### API Gateway
-
-* REST API
-* Resource routing
-* Stage deployment
-* CORS configuration
-
-Terraform configuration is organized using:
-
-```text
-infra/terraform/
-├── versions.tf
-├── providers.tf
-├── variables.tf
-├── outputs.tf
-├── terraform.tfvars.example
-└── main.tf
-```
-
----
-
-## Operations
-
-### Start Environment
-
-```bash
+``` bash
 make up
-```
-
-### Stop Environment
-
-```bash
-make down
-```
-
-### View Service Status
-
-```bash
-make status
-```
-
-### View Logs
-
-```bash
-make logs
-```
-
-### Initialize Terraform
-
-```bash
-make tf-init
-```
-
-### Validate Terraform
-
-```bash
-make tf-validate
-```
-
-### Plan Infrastructure Changes
-
-```bash
-make tf-plan
-```
-
-### Apply Infrastructure
-
-```bash
-make tf-apply
-```
-
-### Destroy Infrastructure
-
-```bash
-make tf-destroy
-```
-
-### Seed Sample Data
-
-```bash
+make init
+make apply
 make seed
-```
-
-### Run Smoke Tests
-
-```bash
 make smoke
+make validate
 ```
 
----
+# Makefile Interface
 
-## CI/CD
+-   Lifecycle
+-   Infrastructure
+-   Application
+-   Validation
+-   Documentation
+-   Cleanup
 
-GitHub Actions automatically validates Terraform configuration on every push and pull request.
+# Development Workflow
 
-Validation includes:
+``` mermaid
+flowchart TD
+A[Clone]-->B[Deploy]
+B-->C[Seed]
+C-->D[Smoke Test]
+D-->E[Validate]
+E-->F[Destroy]
+```
 
-* `terraform fmt -check`
-* `terraform init`
-* `terraform validate`
+# Validation
 
-This ensures infrastructure code remains properly formatted and syntactically valid before deployment.
+``` text
+✓ Docker
+✓ LocalStack
+✓ Terraform
+✓ Lambda
+✓ API Gateway
+✓ DynamoDB
+✓ Smoke Tests
 
----
+PASSED: 28
+WARNINGS: 0
+FAILED: 0
+```
 
-## Documentation
+# AWS Architecture
 
-Additional project documentation is available in the `docs/` directory:
+CafeOps demonstrates a modern serverless architecture built around
+managed AWS services and Infrastructure as Code.
 
-* **ARCHITECTURE.md** – Architecture overview and component design
-* **RUNBOOK.md** – Operational procedures and troubleshooting guidance
-* **TERRAFORM.md** – Infrastructure design and deployment workflow
+# AWS Services
 
----
+  Service       Purpose            Status
+  ------------- ----------------- --------
+  API Gateway   REST API             ✅
+  Lambda        Compute              ✅
+  DynamoDB      Persistence          ✅
+  IAM           Least Privilege      ✅
+  CloudWatch    Monitoring           🚧
+  SNS           Notifications        📅
 
-## Future Enhancements
+# AWS Competencies Demonstrated
 
-* Multi-environment Terraform deployments
-* Prometheus metrics collection
-* Grafana dashboards and observability
-* Authentication and authorization
-* Automated integration testing
-* Security scanning and compliance validation
-* CI/CD deployment automation
+  SAA Domain                Demonstrated Through
+  ------------------------- -------------------------------------
+  Secure Architectures      IAM
+  Resilient Architectures   Stateless Lambda + DynamoDB
+  High Performance          API Gateway + Lambda
+  Cost Optimization         Serverless
+  Operational Excellence    Terraform + Automation + Validation
 
----
+# Testing
 
-## License
+Infrastructure checks, API verification, Lambda execution, DynamoDB
+connectivity, smoke tests, and validation are included.
 
-This project is licensed under the terms of the LICENSE file included in this repository.
+# Screenshots
+
+-   Architecture
+-   Web UI
+-   LocalStack
+-   Terraform
+-   Validation
+-   GitHub Actions
+
+# Documentation
+
+-   Architecture Overview
+-   Terraform Guide
+-   Operational Runbook
+-   Architecture Decision Records
+-   Graphviz Diagrams
+
+# Roadmap
+
+## Phase 1
+
+-   ✅ Core Platform
+-   ✅ Validation
+-   ✅ Web UI
+
+## Phase 2
+
+-   [ ] CloudWatch
+-   [ ] SNS
+-   [ ] EventBridge
+-   [ ] Cognito
+
+## Phase 3
+
+-   [ ] SQS
+-   [ ] Step Functions
+-   [ ] S3
+-   [ ] Production AWS Deployment
+
+# Lessons Learned
+
+Building CafeOps reinforced that successful cloud engineering is less
+about deploying individual AWS services and more about designing systems
+that are repeatable, maintainable, observable, and well documented.
+
+# Portfolio Engineering Standard
+
+Every flagship project in my portfolio includes:
+
+-   Architecture documentation
+-   Infrastructure as Code
+-   Automation
+-   Validation
+-   Operational runbooks
+-   Repeatable deployment workflows
+
+# License
+
+MIT License.
+
+# Author
+
+**Timothy Heverin**
+
+Infrastructure Engineer • Cloud Engineer • AWS Solutions Architect
+Associate Candidate
+
+AWS • Terraform • Linux • Python • Docker • Infrastructure as Code •
+Automation
+
+------------------------------------------------------------------------
+
+**Design. Deploy. Validate. Automate.**
